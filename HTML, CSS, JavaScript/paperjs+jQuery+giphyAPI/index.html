@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+		img.desaturate { 
+		-webkit-filter: grayscale(100%);
+		-moz-filter: grayscale(100%);
+		filter: grayscale(100%);
+		}
+
+		#container {
+			position: relative;
+		}
+
+		#myCanvas {
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			top: 0;
+			left: 0;
+			z-index: 5;
+		}
+
+		#gif {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			width: 100em;
+			height: 25em;
+			margin-top: 0em;
+			margin-left: -48em;
+			z-index: 10;
+			opacity: 0.7;
+		}
+
+		container.#container5 {
+			position: absolute;
+		    top: 50%;
+			left: 50%;
+			width: 100em;
+			height: 25em;
+			margin-top: 0em;
+			/*margin-left: -43em;*/
+			/*margin-left: 0px;*/
+			z-index: 15;
+			/*opacity: 0.7;*/
+		}
+
+		.box {
+
+			width: 3.1em;
+			height: 3.1em;
+			display: block;
+			float: left;
+			margin-top: 0;
+			margin-right: 0;
+			background-color: black;
+		}
+		.item { 
+
+			width: auto;
+			display: block;
+			float: left;
+			margin-top: 0;
+			margin-right: 0;
+
+			-webkit-transition: left .4s ease-in-out, top .4s ease-in-out .4s;
+			-moz-transition: left .4s ease-in-out, top .4s ease-in-out .4s;
+			-ms-transition: left .4s ease-in-out, top .4s ease-in-out .4s;
+			-o-transition: left .4s ease-in-out, top .4s ease-in-out .4s;
+			transition: left .4s ease-in-out, top .4s ease-in-out .4s;
+		}
+
+/*		#container {
+		    width: 1200px;
+		    margin: 0 auto;
+		}
+		 */
+		/*Media Queries*/
+		@media only screen and (max-width : 1199px),
+		only screen and (max-device-width : 1199px){
+		    #container {
+		        width: 1000px;
+		    }
+		}
+		 
+		 
+		@media only screen and (max-width : 999px),
+		only screen and (max-device-width : 999px){
+		    #container {
+		        width: 800px;
+		    }
+		}
+		 
+		@media only screen and (max-width : 799px),
+		only screen and (max-device-width : 799px){
+		    #container {
+		        width: 600px;
+		    }
+		}
+		 
+		@media only screen and (max-width : 599px),
+		only screen and (max-device-width : 599px){
+		    #container {
+		        width: 400px;
+		    }
+		}
+		 
+		@media only screen and (max-width : 399px),
+		only screen and (max-device-width : 399px){
+		    #container {
+		        width: 200px;
+		    }
+		}
+
+	</style>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<!-- Load the Paper.js library -->
+<script type="text/javascript" src="js/paper-full.min.js"></script>
+<script type="text/javascript" src="js/two.js"></script>
+
+<script src="js/jquery/masonry.pkgd.min.js"></script>
+<script src="js/jquery/kinetic-v5.1.0.min.js"></script>
+
+<!-- Define inlined PaperScript associate it with myCanvas -->
+<script type="text/paperscript" canvas="myCanvas">
+	// Create a Paper.js Path to draw a line into it:
+var count = 150;
+
+// Create a symbol, which we will use to place instances of later:
+var path = new Path.Circle({
+	center: [0, 0],
+	radius: 10,
+	fillColor: 'black',
+	strokeColor: 'white'
+});
+
+var symbol = new Symbol(path);
+
+// Place the instances of the symbol:
+for (var i = 0; i < count; i++) {
+	// The center position is a random point in the view:
+	var center = Point.random() * view.size;
+	var placedSymbol = symbol.place(center);
+	placedSymbol.scale(i / count);
+}
+
+// The onFrame function is called up to 60 times a second:
+function onFrame(event) {
+	// Run through the active layer's children list and change
+	// the position of the placed symbols:
+	for (var i = 0; i < count; i++) {
+		var item = project.activeLayer.children[i];
+		
+		// Move the item 1/20th of its width to the right. This way
+		// larger circles move faster than smaller circles:
+		item.position.y += item.bounds.height / 20;
+		item.position.x += (item.bounds.width / 10)*(Math.random()-0.5);
+		// If the item has left the view on the right, move it back
+		// to the left:
+		if (item.bounds.top > view.size.height) {
+			item.position.y = -item.bounds.height;
+
+		}
+	}
+}
+
+</script>
+</head>
+<body>
+	<div id="container">
+		<div id="container5"></div>
+		<canvas id="myCanvas" resize></canvas>
+		<div id="gif"></div>
+	</div>
+
+	<script>
+		//change "space" to any word
+		var xhr = $.get("http://api.giphy.com/v1/gifs/search?q="+"space"+"&api_key=dc6zaTOxFJmzC&limit=18");
+		xhr.done(function(data) { 
+			console.log("success got data", data);
+			console.log("success got data", data.data[0].images.original.url);
+			//$("#gif").load(data.data[0].bitly_gif_url);
+			//$("#gif").html("<iframe> " + data.data[0].embed_url + "</iframe>");
+		
+
+		// $("gif").load('<img src="' + data.data[0].images.original.url +'">');
+		//$("gif").load('<img src="'+ data.data[0].images.original.url +'">');
+		for (var i = 0; i < data.data.length; i++) {
+			$('<img class = desaturate src="'+ data.data[i].images.original.url +'">').load(function() {
+  			$(this).width(250).height(250).appendTo('#gif');
+  			$(this).appendTo('#gif');
+		});
+		};
+		
+});
+	</script>
+</body>
+
+<script type="text/javascript" src="js/main.js"></script>
+</html>
